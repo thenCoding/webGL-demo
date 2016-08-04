@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo-4</title>
+</head>
+<style type="text/css">
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        width: 100%;
+        height: 100%;
+    }
+
+    #canvas3d {
+        border: none;
+        cursor: move;
+        width: 100%;
+        height: 100%;
+        background-color: #EEEEEE;
+    }
+</style>
+<body onload="threeStart();">
+<div id="canvas3d"></div>
+</body>
+<script src="../js/three.min.js"></script>
+<script>
+    //开启Three.js渲染器
+    var renderer;//声明全局变量（对象）
+    function initThree() {
+        width = document.getElementById('canvas3d').clientWidth;//获取画布「canvas3d」的宽
+        height = document.getElementById('canvas3d').clientHeight;//获取画布「canvas3d」的高
+        renderer = new THREE.WebGLRenderer({antialias: true});//生成渲染器对象（属性：抗锯齿效果为设置有效）
+        renderer.setSize(width, height);//指定渲染器的高宽（和画布框大小一致）
+        document.getElementById('canvas3d').appendChild(renderer.domElement);//追加 【canvas】 元素到 【canvas3d】 元素中。
+        //renderer.setClearColorHex(0xFFFFFF, 1.0);//设置canvas背景色(clearColor)
+    }
+    //设置相机
+    var camera;
+    function initCamera() {
+        camera = new THREE.PerspectiveCamera(45, width / height, 1, 5000);//设置透视投影的相机,默认情况下相机的上方向为Y轴，右方向为X轴，沿着Z轴朝里（视野角：fov 纵横比：aspect 相机离视体积最近的距离：near 相机离视体积最远的距离：far）
+        camera.position.x = 0;//设置相机的位置坐标
+        camera.position.y = 0;//设置相机的位置坐标
+        camera.position.z = 500;//设置相机的位置坐标
+        camera.up.x = 0;//设置相机的上为「x」轴方向
+        camera.up.y = 1;//设置相机的上为「y」轴方向
+        camera.up.z = 0;//设置相机的上为「z」轴方向
+        camera.lookAt({x: 0, y: 0, z: 0});//设置视野的中心坐标
+    }
+    //设置场景
+    var scene;
+    function initScene() {
+        scene = new THREE.Scene();
+    }
+
+    //设置光源
+    var light;
+    function initLight() {
+        light = new THREE.PointLight(0xff0000, 1.0, 0);//设置平行光源
+        light.position.set(0, 0, 70);//设置光源向量
+        scene.add(light);// 追加光源到场景
+    }
+    //设置物体
+    var cube;
+    function initObject() {
+        var geometry = new THREE.SphereGeometry(50, 50, 50, 0, 2 * Math.PI, 0, 2 * Math.PI);
+        var material = new THREE.MeshLambertMaterial({color: 0xffffff,wireframe:true});
+        console.log(geometry.vertices);
+        cube = new THREE.Mesh(geometry,material);
+        cube.rotation.x = Math.PI / 5;
+        cube.rotation.y = Math.PI / 5;
+        cube.position.set(0, 0, 0);
+        scene.add(cube);
+
+        var pointGeometry = new THREE.Geometry();
+        for (var i = 0; i < geometry.vertices.length; i++) {
+            var vertex = new THREE.Vector3();
+            vertex.x = geometry.vertices[i].x;
+            vertex.y = geometry.vertices[i].y;
+            vertex.z = geometry.vertices[i].z+50;
+            pointGeometry.vertices.push(vertex);
+            var point = new THREE.Points(pointGeometry, new THREE.PointsMaterial({color: 0x888888}));
+        }
+        scene.add(point);
+    }
+    //执行
+    function threeStart() {
+        initThree();
+        initCamera();
+        initScene();
+        initLight();
+        initObject();
+        renderer.clear();
+        renderer.render(scene, camera);
+    }
+</script>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo-5</title>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script src="../js/three.min.js"></script>
+<script>
+    var renderer, scene, object1, object2, object3, object4, camera, light;
+    var width = window.innerWidth, height = window.innerHeight;
+    function initRenderer() {
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
+        renderer.setSize(width, height);
+        document.getElementById('container').appendChild(renderer.domElement);
+    }
+    function initScene() {
+        scene = new THREE.Scene();
+    }
+    function initCamera() {
+        camera = new THREE.PerspectiveCamera(60, width / height, 1, 5000);
+        camera.position.set(0, 0, 800);
+        camera.up.x = 0;
+        camera.up.y = 1;
+        camera.up.z = 0;
+        camera.lookAt({
+            x: 0,
+            y: 0,
+            z: 0
+        });
+    }
+    function initObject() {
+        //带图片纹理的立方体
+        var geometry1 = new THREE.CubeGeometry(100, 100, 100, 50, 50, 50);
+        var map1 = new THREE.ImageUtils.loadTexture('../img/demo2.jpg');
+        var material1 = new THREE.MeshLambertMaterial({map: map1});
+        object1 = new THREE.Mesh(geometry1, material1);
+        object1.position.set(0, 0, 0);
+        object1.rotation.x = Math.PI / 5;
+        object1.rotation.y = Math.PI / 5;
+        scene.add(object1);
+
+        //显示线框的立方体
+        var geometry2 = new THREE.CubeGeometry(100, 100, 100, 50, 50, 50);
+        var material2 = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: true});
+        object2 = new THREE.Mesh(geometry2, material2);
+        object2.position.set(200, 0, 0);
+        object2.rotation.x = Math.PI / 5;
+        object2.rotation.y = Math.PI / 5;
+        scene.add(object2);
+
+        //平面
+        var geometry3 = new THREE.PlaneGeometry(100, 100, 100, 100);
+        var material3 = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: true});
+        object3 = new THREE.Mesh(geometry3, material3);
+        object3.position.x = 50;
+        object3.position.y = 50;
+        object3.position.z = 50;
+        scene.add(object3);
+    }
+    function initPoint() {
+        var pointGeometry = new THREE.Geometry();
+        for (var i = 0; i < 100; i++) {
+            var vertex = new THREE.Vector3();
+            vertex.x = THREE.Math.randFloatSpread(1000);
+            vertex.y = THREE.Math.randFloatSpread(1000);
+            vertex.z = THREE.Math.randFloatSpread(1000);
+            pointGeometry.vertices.push(vertex);
+            var point = new THREE.Points(pointGeometry, new THREE.PointsMaterial({color: 0x888888}));
+        }
+        scene.add(point);
+    }
+    function initLight() {
+        light = new THREE.PointLight(0xFFFFFF, 1, 350);
+        light.position.set(0, 0, 300);
+        scene.add(light);
+    }
+    function run() {
+        initRenderer();
+        initScene();
+        initCamera();
+        initLight();
+        initObject();
+        initPoint();
+    }
+    run();
+    function animate() {
+        var timer = Date.now() * 0.0001;
+        camera.position.x = Math.cos(timer) * 400;
+        camera.position.z = Math.sin(timer) * 400;
+        camera.lookAt(object1.position);
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
+</html>

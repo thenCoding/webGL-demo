@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>plane-demo</title>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script src="../js/three.min.js"></script>
+<script>
+    var renderer, scene, camera, plane, light;
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    function initScene() {
+        scene = new THREE.Scene();
+    }
+
+    function initCamera() {
+        camera = new THREE.PerspectiveCamera(75, width / height, 1, 5000);
+        camera.position.x = 0;
+        camera.position.y = 0;
+        camera.position.z = 300;
+        camera.lookAt({
+            x: 0,
+            y: 0,
+            z: 0
+        });
+    }
+
+    function initLight () {
+        light = new THREE.PointLight(0xFFFFFF,1,100);
+        light.position.set(0,0,10);
+        scene.add(light);
+    }
+
+    function initPlane() {
+        var planeGeometry = new THREE.PlaneBufferGeometry(100, 100, 10, 10);
+        var material = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: true});
+        plane = new THREE.Mesh(planeGeometry, material);
+        scene.add(plane);
+    }
+
+    function initRenderer() {
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(width, height);
+        document.getElementById('container').appendChild(renderer.domElement);
+    }
+
+    function run() {
+        initRenderer();
+        initScene();
+        initCamera();
+        initLight();
+        initPlane();
+        renderer.render(scene,camera);
+    }
+    run();
+
+    var brake = false;
+    function animate () {
+        if (!brake) {
+            light.position.z += 0.5;
+            light.position.z > 90 && (brake = true);
+        }else {
+            light.position.z -= 0.5;
+            light.position.z < 5 && (brake = false);
+        }
+        renderer.render(scene,camera);
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
+</html>
